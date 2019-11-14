@@ -41,10 +41,10 @@ class Classifier:
         model = Sequential()
         model.add(Dense(constant.UNIT, input_dim=num_features, activation='relu'))
         model.add(Dropout(constant.DROP_RATE))
-        model.add(Dense(constant.UNIT, activation='relu'))
-        model.add(Dropout(constant.DROP_RATE))
-        model.add(Dense(constant.UNIT, activation='relu'))
-        model.add(Dropout(constant.DROP_RATE))
+        for i in range(constant.NUM_LAYERS - 1):
+            model.add(Dense(constant.UNIT, activation='relu'))
+            model.add(Dropout(constant.DROP_RATE))
+
         model.add(Dense(constant.OUTPUT_UNIT, activation='sigmoid'))
 
         model.compile(loss='binary_crossentropy',

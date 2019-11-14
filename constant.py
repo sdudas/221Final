@@ -12,3 +12,9 @@ DROP_RATE = 0.5
 
 #Number of epochs when fitting
 NUM_EPOCH = 20
+
+#Number of Layers
+NUM_LAYERS = 3
+
+#threshold for p-test in metrics
+THRESHOLD = 0.7
