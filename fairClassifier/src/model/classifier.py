@@ -39,16 +39,16 @@ class Classifier:
     def create_nn_classifier(self,n_features):
         if self.type == 'tree':
             return RandomForestClassifier(**self.random_forest_params)
-            
+
         inputs = Input(shape=(n_features,))
 
         dense1 = Dense(constant.UNIT, activation='relu')(inputs)
         dropout1 = Dropout(constant.DROP_RATE)(dense1)
-        dense2 = Dense(constant.UNIT, activation='relu')(dropout1)
-        dropout2 = Dropout(constant.DROP_RATE)(dense2)
-        dense3 = Dense(constant.UNIT, activation="relu")(dropout2)
-        dropout3 = Dropout(constant.DROP_RATE)(dense3)
-        outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid')(dropout3)
+        # dense2 = Dense(constant.UNIT, activation='relu')(dropout1)
+        # dropout2 = Dropout(constant.DROP_RATE)(dense2)
+        # dense3 = Dense(constant.UNIT, activation="relu")(dropout2)
+        # dropout3 = Dropout(constant.DROP_RATE)(dense3)
+        outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid')(dropout1)
         model = Model(inputs=[inputs], outputs=[outputs])
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 

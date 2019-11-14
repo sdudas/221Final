@@ -55,11 +55,11 @@ class FairClassifier(object):
     def _create_clf_net(self, inputs):
         dense1 = Dense(constant.UNIT, activation='relu')(inputs)
         dropout1 = Dropout(constant.DROP_RATE)(dense1)
-        dense2 = Dense(constant.UNIT, activation='relu')(dropout1)
-        dropout2 = Dropout(constant.DROP_RATE)(dense2)
-        dense3 = Dense(constant.UNIT, activation='relu')(dropout2)
-        dropout3 = Dropout(constant.DROP_RATE)(dense3)
-        outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid', name='y')(dropout3)
+        # dense2 = Dense(constant.UNIT, activation='relu')(dropout1)
+        # dropout2 = Dropout(constant.DROP_RATE)(dense2)
+        # dense3 = Dense(constant.UNIT, activation='relu')(dropout2)
+        # dropout3 = Dropout(constant.DROP_RATE)(dense3)
+        outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid', name='y')(dropout1)
         return Model(inputs=[inputs], outputs=[outputs])
 
     """
@@ -69,7 +69,7 @@ class FairClassifier(object):
         dense1 = Dense(constant.UNIT, activation='relu')(inputs)
         dense2 = Dense(constant.UNIT, activation='relu')(dense1)
         dense3 = Dense(constant.UNIT, activation='relu')(dense2)
-        outputs = [Dense(constant.OUTPUT_UNIT, activation='sigmoid')(dense3) for _ in range(n_sensitive)]
+        outputs = [Dense(constant.OUTPUT_UNIT, activation='sigmoid')(dense1) for _ in range(n_sensitive)]
         return Model(inputs=[inputs], outputs=outputs)
 
     """
