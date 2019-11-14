@@ -22,7 +22,7 @@ def cli_parser():
     predict_column = 'score_text'
 
     # change the threshold if you want to consider less fairness
-    threshold = 70
+    threshold = 99 # 70
     return sensitive_attribute, sensitive_value, predict_value, predict_column, threshold
 
 
@@ -43,7 +43,7 @@ try:
     # create a nn classifier
     clf = classifier.create_nn_classifier(n_features=X_train.shape[1])
     # train on train set
-    history = clf.fit(X_train.values, y_train.values, epochs=20, verbose=1)
+    history = clf.fit(X_train.values, y_train.values, epochs=20, verbose=1) # clf.fit(X_train.values, y_train.values) # 
     y_pred = pd.Series(clf.predict(X_test).ravel(), index=y_test.index)
 
     #Result of unfair classifier
@@ -70,4 +70,4 @@ except Exception as ex:
     print(ex)
 
 # uncomment this line if you you want to visualize accuracy vs fairness tradeoff
-fig = visualize.plotScatter(clf.pruleArray, clf.accuracyArray, x_lab="P-Rule", y_lab="Accuracy")
+# fig = visualize.plotScatter(clf.pruleArray, clf.accuracyArray, x_lab="P-Rule", y_lab="Accuracy")

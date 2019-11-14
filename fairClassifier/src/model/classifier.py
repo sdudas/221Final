@@ -1,5 +1,15 @@
 from keras.layers import Input, Dense, Dropout
 from keras.models import Model
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Flatten
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score
+from keras.callbacks import ModelCheckpoint
+from sklearn.metrics import accuracy_score
 import sys, os
 
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(sys.path[0])), 'configs' ))
@@ -11,6 +21,15 @@ Classifier class contains method to create NN classifier
 class Classifier:
 
     def __init__(self):
+        self.random_forest_params = {'bootstrap': True,
+              'min_samples_leaf': 3,
+              'n_estimators': 50, 
+              'min_samples_split': 10,
+              'max_features': 'sqrt',
+              'max_depth': 6,
+              'max_leaf_nodes': None}
+
+        self.type = 'feed forward'
         pass
 
     """
@@ -18,6 +37,10 @@ class Classifier:
     Returns the created model
     """
     def create_nn_classifier(self,n_features):
+        if self.type == 'tree':
+            return RandomForestClassifier(**self.random_forest_params)
+
+
         inputs = Input(shape=(n_features,))
         dense1 = Dense(constant.UNIT, activation='relu')(inputs)
         dropout1 = Dropout(constant.DROP_RATE)(dense1)

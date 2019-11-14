@@ -31,9 +31,9 @@ class PreProcess:
         X = pd.get_dummies(df, columns=categorical_df)
         return X, y
 
-        def split_train_test(self, X, y):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y)
-            return X_train, X_test, y_train, y_test
+    def split_train_test(self, X, y):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y)
+        return X_train, X_test, y_train, y_test
 
 pp = PreProcess("data/compas-scores-two-years.csv")
 pp.read_in_data()

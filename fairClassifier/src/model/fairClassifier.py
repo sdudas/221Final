@@ -1,6 +1,7 @@
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.utils.class_weight import compute_class_weight
 from keras.layers import Input, Dense, Dropout
+from sklearn.ensemble import RandomForestClassifier
 from keras.models import Model
 import pandas as pd
 import numpy as np

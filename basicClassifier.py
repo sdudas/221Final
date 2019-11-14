@@ -27,7 +27,7 @@ class Classifier:
         dropout3 = Dropout(constant.DROP_RATE)(dense3)
         outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid')(dropout3)
         model = Model(inputs=[inputs], outputs=[outputs])
-        model.compile(loss='binary_crossentropy', optimizer='adam')
+        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
         return model
 
