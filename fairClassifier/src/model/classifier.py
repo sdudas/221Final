@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Flatten
+from keras.layers import Dense, Activation, Flatten, LSTM, Conv1D
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 from sklearn.metrics import accuracy_score
@@ -39,9 +39,9 @@ class Classifier:
     def create_nn_classifier(self,n_features):
         if self.type == 'tree':
             return RandomForestClassifier(**self.random_forest_params)
-
-
+            
         inputs = Input(shape=(n_features,))
+
         dense1 = Dense(constant.UNIT, activation='relu')(inputs)
         dropout1 = Dropout(constant.DROP_RATE)(dense1)
         dense2 = Dense(constant.UNIT, activation='relu')(dropout1)
