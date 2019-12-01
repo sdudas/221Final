@@ -10,7 +10,7 @@ from preprocess import DataProcessor
 from classifier import Classifier
 from fairClassifier import FairClassifier
 from metrics import FairMetrics
-import visualize
+# import visualize
 import conf
 
 create_gif = True

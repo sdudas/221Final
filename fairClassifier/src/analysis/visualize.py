@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+matplotlib.use('TkAgg')
 import seaborn as sns
 
 sns.set(style="white", palette="muted", color_codes=True, context="talk")
