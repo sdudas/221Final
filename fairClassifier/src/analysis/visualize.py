@@ -1,5 +1,6 @@
-import matplotlib.pyplot as plt
+import matplotlib
 matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 sns.set(style="white", palette="muted", color_codes=True, context="talk")
@@ -60,4 +61,10 @@ def plotScatter(X,Y, x_lab, y_lab):
     plt.scatter(X, Y)
     plt.xlabel(x_lab)
     plt.ylabel(y_lab)
+    plt.show()
+
+def plotAccuracyAndFairness(X, accuracy, fairness, x_lab):
+    plt.plot(X, accuracy, 'b-', label='Accuracy')
+    plt.plot(X, fairness, 'r-', label='P-Rule Satisfied')
+    plt.xlabel(x_lab)
     plt.show()

@@ -20,7 +20,7 @@ Classifier class contains method to create NN classifier
 """
 class Classifier:
 
-    def __init__(self):
+    def __init__(self, num_hidden):
         self.random_forest_params = {'bootstrap': True,
               'min_samples_leaf': 3,
               'n_estimators': 50, 
@@ -30,26 +30,22 @@ class Classifier:
               'max_leaf_nodes': None}
 
         self.type = 'feed forward'
+        self.num_hidden = num_hidden
         pass
 
     """
     Create a NN classifier given the shape number of features as input tensor.
     Returns the created model
     """
-    def create_nn_classifier(self,n_features):
-        if self.type == 'tree':
-            return RandomForestClassifier(**self.random_forest_params)
-
-        inputs = Input(shape=(n_features,))
-
+    def create_nn_classifier(self,inputs):
         dense1 = Dense(constant.UNIT, activation='relu')(inputs)
-        dropout1 = Dropout(constant.DROP_RATE)(dense1)
-        # dense2 = Dense(constant.UNIT, activation='relu')(dropout1)
-        # dropout2 = Dropout(constant.DROP_RATE)(dense2)
-        # dense3 = Dense(constant.UNIT, activation="relu")(dropout2)
-        # dropout3 = Dropout(constant.DROP_RATE)(dense3)
-        outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid')(dropout1)
+        previous = Dropout(constant.DROP_RATE)(dense1)
+        for layer_num in range(self.num_hidden):
+          dense = Dense(constant.UNIT, activation='relu')(previous)
+          dropout = Dropout(constant.DROP_RATE)(dense)
+          previous = dropout
+        outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid')(previous)
         model = Model(inputs=[inputs], outputs=[outputs])
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-
+        print(model.summary())
         return model

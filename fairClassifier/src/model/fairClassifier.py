@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 import os, sys
 
+from classifier import Classifier
+
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'analysis'))
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(sys.path[0])), 'configs' ))
 
@@ -18,12 +20,14 @@ FairClassifier equipped with adversarial network
 """
 class FairClassifier(object):
 
-    def __init__(self, n_features, n_sensitive, lambdas):
+    def __init__(self, n_features, n_sensitive, lambdas, n_hidden):
         self.lambdas = lambdas
 
         clf_inputs = Input(shape=(n_features,))
         adv_inputs = Input(shape=(1,))
         self.metrics = FairMetrics()
+
+        self.num_hidden = n_hidden
 
         clf_net = self._create_clf_net(clf_inputs)
         adv_net = self._create_adv_net(adv_inputs, n_sensitive)
@@ -53,14 +57,9 @@ class FairClassifier(object):
     Create a 3 layer Neural Network
     """
     def _create_clf_net(self, inputs):
-        dense1 = Dense(constant.UNIT, activation='relu')(inputs)
-        dropout1 = Dropout(constant.DROP_RATE)(dense1)
-        # dense2 = Dense(constant.UNIT, activation='relu')(dropout1)
-        # dropout2 = Dropout(constant.DROP_RATE)(dense2)
-        # dense3 = Dense(constant.UNIT, activation='relu')(dropout2)
-        # dropout3 = Dropout(constant.DROP_RATE)(dense3)
-        outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid', name='y')(dropout1)
-        return Model(inputs=[inputs], outputs=[outputs])
+        classifier = Classifier(self.num_hidden)
+        clf = classifier.create_nn_classifier(inputs)
+        return clf
 
     """
     Create a 3 layer adversarial Neural Network
