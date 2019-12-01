@@ -64,7 +64,9 @@ def plotScatter(X,Y, x_lab, y_lab):
     plt.show()
 
 def plotAccuracyAndFairness(X, accuracy, fairness, x_lab):
-    plt.plot(X, accuracy, 'b-', label='Accuracy')
-    plt.plot(X, fairness, 'r-', label='P-Rule Satisfied')
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.scatter(X, accuracy, c='b', label='Accuracy')
+    ax.scatter(X, fairness, c='r', label='P-Rule Satisfied')
     plt.xlabel(x_lab)
     plt.show()

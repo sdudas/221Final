@@ -1,6 +1,5 @@
 #Defing the constant used in the project.
 # Units of the Dense layer
-UNIT = 32
 
 OUTPUT_UNIT = 1
 
@@ -12,5 +11,7 @@ THRESHOLD = 0.5
 
 
 # Number of hidden layers in classifier to try
-NUM_LAYERS = [1, 2, 3, 5, 10, 20]
+NUM_LAYERS = 2
+
+NUM_UNITS = 50
 

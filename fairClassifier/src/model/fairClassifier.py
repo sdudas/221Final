@@ -20,14 +20,15 @@ FairClassifier equipped with adversarial network
 """
 class FairClassifier(object):
 
-    def __init__(self, n_features, n_sensitive, lambdas, n_hidden):
+    def __init__(self, n_features, n_sensitive, lambdas, n_hidden_clf, n_units):
         self.lambdas = lambdas
 
         clf_inputs = Input(shape=(n_features,))
         adv_inputs = Input(shape=(1,))
         self.metrics = FairMetrics()
 
-        self.num_hidden = n_hidden
+        self.num_hidden_clf = n_hidden_clf
+        self.num_units=n_units
 
         clf_net = self._create_clf_net(clf_inputs)
         adv_net = self._create_adv_net(adv_inputs, n_sensitive)
@@ -57,7 +58,7 @@ class FairClassifier(object):
     Create a 3 layer Neural Network
     """
     def _create_clf_net(self, inputs):
-        classifier = Classifier(self.num_hidden)
+        classifier = Classifier(self.num_hidden_clf, self.num_units)
         clf = classifier.create_nn_classifier(inputs)
         return clf
 
@@ -65,9 +66,9 @@ class FairClassifier(object):
     Create a 3 layer adversarial Neural Network
     """
     def _create_adv_net(self, inputs, n_sensitive):
-        dense1 = Dense(constant.UNIT, activation='relu')(inputs)
-        dense2 = Dense(constant.UNIT, activation='relu')(dense1)
-        dense3 = Dense(constant.UNIT, activation='relu')(dense2)
+        dense1 = Dense(self.num_units, activation='relu')(inputs)
+        dense2 = Dense(self.num_units, activation='relu')(dense1)
+        dense3 = Dense(self.num_units, activation='relu')(dense2)
         outputs = [Dense(constant.OUTPUT_UNIT, activation='sigmoid')(dense1) for _ in range(n_sensitive)]
         return Model(inputs=[inputs], outputs=outputs)
 

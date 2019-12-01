@@ -20,7 +20,7 @@ Classifier class contains method to create NN classifier
 """
 class Classifier:
 
-    def __init__(self, num_hidden):
+    def __init__(self, num_hidden, num_units):
         self.random_forest_params = {'bootstrap': True,
               'min_samples_leaf': 3,
               'n_estimators': 50, 
@@ -31,6 +31,7 @@ class Classifier:
 
         self.type = 'feed forward'
         self.num_hidden = num_hidden
+        self.num_units = num_units
         pass
 
     """
@@ -38,10 +39,10 @@ class Classifier:
     Returns the created model
     """
     def create_nn_classifier(self,inputs):
-        dense1 = Dense(constant.UNIT, activation='relu')(inputs)
+        dense1 = Dense(self.num_units, activation='relu')(inputs)
         previous = Dropout(constant.DROP_RATE)(dense1)
         for layer_num in range(self.num_hidden):
-          dense = Dense(constant.UNIT, activation='relu')(previous)
+          dense = Dense(self.num_units, activation='relu')(previous)
           dropout = Dropout(constant.DROP_RATE)(dense)
           previous = dropout
         outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid')(previous)

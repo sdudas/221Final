@@ -11,7 +11,7 @@ from classifier import Classifier
 from fairClassifier import FairClassifier
 from metrics import FairMetrics
 from keras.layers import Input
-# import visualize
+import visualize
 import conf
 
 import constant
@@ -43,41 +43,42 @@ try:
     # ##split the data into train and test set
     X_train, X_test, y_train, y_test, Z_train, Z_test = data.split_data(X,y,Z)
 
-    for num_hidden in constant.NUM_LAYERS:
-        classifier = Classifier(num_hidden)
-        # create a nn classifier
-        clf = classifier.create_nn_classifier(Input(shape=(X_train.shape[1],)))
-        # train on train set
-        history = clf.fit(X_train.values, y_train.values, epochs=20, verbose=0)
-        y_pred = pd.Series(clf.predict(X_test).ravel(), index=y_test.index)
+    classifier = Classifier(constant.NUM_LAYERS, constant.NUM_UNITS)
+    # create a nn classifier
+    clf = classifier.create_nn_classifier(Input(shape=(X_train.shape[1],)))
+    # train on train set
+    history = clf.fit(X_train.values, y_train.values, epochs=20, verbose=0)
+    y_pred = pd.Series(clf.predict(X_test).ravel(), index=y_test.index)
 
-        #Matrix Plot
-        # conf.plotMatrix(y_test, y_pred, ['low', 'high'], True)
+    #Matrix Plot
+    # conf.plotMatrix(y_test, y_pred, ['low', 'high'], True)
 
-        #Result of unfair classifier
-        print(f"Accuracy: {100*accuracy_score(y_test, (y_pred>0.5)):.1f}%")
+    #Result of unfair classifier
+    accuracy = accuracy_score(y_test, (y_pred>0.5))
+    print(f"Accuracy: {100*accuracy:.1f}%")
 
-        # Display the result of fairness metric of unfair classifier.
-        metrics = FairMetrics()
-        print("The classifier satisfies the following %p-rules:")
-        print("P-rule {0:.0f}".format(metrics.p_rule(y_pred, Z_test[sensitive_attribute])))
+    # Display the result of fairness metric of unfair classifier.
+    metrics = FairMetrics()
+    print("The classifier satisfies the following %p-rules:")
+    print("P-rule {0:.0f}".format(metrics.p_rule(y_pred, Z_test[sensitive_attribute])))
 
-        p_value = metrics.p_rule(y_pred, Z_test[sensitive_attribute])
+    p_value = metrics.p_rule(y_pred, Z_test[sensitive_attribute])
 
-        while(p_value < threshold):
-        # initialise FairClassifier
-            clf = FairClassifier(n_features=X_train.shape[1], n_sensitive=Z_train.shape[1], lambdas=[130], n_hidden=num_hidden)
-            print("Initialized fair classifier")
-            # pre-train both adverserial and classifier networks
-            clf.pretrain(X_train, y_train, Z_train, verbose=1, epochs=20)
 
-            #Get the result of fair classifier
-            clf.fit(X_train, y_train, Z_train, validation_data=(X_test, y_test, Z_test), T_iter=160, save_figs=create_gif)
-            print("Accuracy ", clf.accuracyArray[len(clf.accuracyArray) -1], "P-rule satisfied ",clf.pruleArray[len(clf.pruleArray)-1])
-            p_value = clf.pruleArray[len(clf.pruleArray)-1]
-            print("P-rule {0:.0f}".format(clf.pruleArray[len(clf.pruleArray)-1]))
+    while(p_value < threshold):
+    # initialise FairClassifier
+        clf = FairClassifier(n_features=X_train.shape[1], n_sensitive=Z_train.shape[1], lambdas=[130], n_hidden_clf=constant.NUM_LAYERS, n_units=constant.NUM_UNITS)
+        print("Initialized fair classifier")
+        # pre-train both adverserial and classifier networks
+        clf.pretrain(X_train, y_train, Z_train, verbose=0, epochs=20)
+
+        #Get the result of fair classifier
+        clf.fit(X_train, y_train, Z_train, validation_data=(X_test, y_test, Z_test), T_iter=160, save_figs=create_gif)
+        print("Accuracy ", clf.accuracyArray[len(clf.accuracyArray) -1], "P-rule satisfied ",clf.pruleArray[len(clf.pruleArray)-1])
+        p_value = clf.pruleArray[len(clf.pruleArray)-1]
+        print("P-rule {0:.0f}".format(clf.pruleArray[len(clf.pruleArray)-1]))
+
+    # fig = visualize.plotScatter(clf.pruleArray, clf.accuracyArray, x_lab="P-Rule", y_lab="Accuracy")
+
 except Exception as ex:
     print(ex)
-
-#uncomment this line if you you want to visualize accuracy vs fairness tradeoff
-#fig = visualize.plotScatter(clf.pruleArray, clf.accuracyArray, x_lab="P-Rule", y_lab="Accuracy")
