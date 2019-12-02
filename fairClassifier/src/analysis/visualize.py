@@ -1,7 +1,19 @@
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+#importing libraries
+from sklearn.datasets import load_boston
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
 import seaborn as sns
+# import statsmodels.api as sm
+# matplotlib inline
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import RidgeCV, LassoCV, Ridge, Lasso
 
 sns.set(style="white", palette="muted", color_codes=True, context="talk")
 create_gif = False
@@ -69,4 +81,11 @@ def plotAccuracyAndFairness(X, accuracy, fairness, x_lab):
     ax.scatter(X, accuracy, c='b', label='Accuracy')
     ax.scatter(X, fairness, c='r', label='P-Rule Satisfied')
     plt.xlabel(x_lab)
+    plt.show()
+
+def plotFeatureCorrelations(df):
+    plt.figure()
+    df = df.round(2)
+    sns.set(font_scale=1)
+    sns.heatmap(df, annot=True, cmap=plt.cm.Reds, annot_kws={"size": 10}, square=True, xticklabels=False)
     plt.show()

@@ -48,5 +48,4 @@ class Classifier:
         outputs = Dense(constant.OUTPUT_UNIT, activation='sigmoid')(previous)
         model = Model(inputs=[inputs], outputs=[outputs])
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-        print(model.summary())
         return model

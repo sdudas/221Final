@@ -1,18 +1,21 @@
 import sys, os
 import pandas as pd
 from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.linear_model import LinearRegression
 
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'preprocess'))
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'model'))
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'analysis'))
 
-from preprocess import DataProcessor
+from preprocess import DataProcessor, FeatureSelector
 from classifier import Classifier
 from fairClassifier import FairClassifier
 from metrics import FairMetrics
 from keras.layers import Input
 import visualize
 import conf
+
+from keras.wrappers.scikit_learn import KerasClassifier
 
 import constant
 
@@ -44,10 +47,26 @@ try:
     X_train, X_test, y_train, y_test, Z_train, Z_test = data.split_data(X,y,Z)
 
     classifier = Classifier(constant.NUM_LAYERS, constant.NUM_UNITS)
+
     # create a nn classifier
     clf = classifier.create_nn_classifier(Input(shape=(X_train.shape[1],)))
+
+    ## COMMENT OUT THE BLOCK TO IGNORE FEATURE SELECTION
+    #########################################################
+    selector = FeatureSelector()
+    # selector.select_features(X_train, y_train, X_test, y_test)
+    rankings = selector.select_k(constant.OPTIMAL_NUM_FEATURES, X_train, y_train)
+
+    for i, category in enumerate(list(X_train)):
+        if rankings[i] != 1:
+            X_train.drop(columns=[category], inplace=True)
+            X_test.drop(columns=[category], inplace=True)
+
     # train on train set
-    history = clf.fit(X_train.values, y_train.values, epochs=20, verbose=0)
+    clf = classifier.create_nn_classifier(Input(shape=(X_train.shape[1],)))
+
+    #########################################################
+    history = clf.fit(X_train.values, y_train.values, epochs=50, verbose=0)
     y_pred = pd.Series(clf.predict(X_test).ravel(), index=y_test.index)
 
     #Matrix Plot

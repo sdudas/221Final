@@ -2,6 +2,11 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
+
+from sklearn.feature_selection import RFE
+
+import visualize
 
 """
 DataProcessor class contains the methods to load, preprocess and split the data into train and test set.
@@ -10,6 +15,7 @@ class DataProcessor:
 
     def __init__(self, file):
         self.path = file
+        self.feature_selector = True
 
         self.sensitive_variables = []
         self.irrelevant_variables = ["id", "name", "first", "last", "compas_screening_date", "dob", "age", "days_b_screening_arrest", "c_charge_desc", "c_jail_in", 
@@ -53,11 +59,17 @@ class DataProcessor:
         sensitive_attribs = [sensitive_attribute]
         Z = self.split_columns(df, sensitive_attribs, sensitive_attribute, attribute)
 
+        if self.feature_selector:
+            self.highlyRelevantFeatures(df)
+
         y = (df[["score_text_cat"]])
         df = df.drop(columns=self.to_predict)
         df = df.fillna('Unknown').pipe(pd.get_dummies, drop_first=True)
         categorical_df = df.select_dtypes(include=['object']).copy().columns.tolist()
         X = pd.get_dummies(df, columns=categorical_df)
+        if self.feature_selector:
+            self.featureSelector(X)
+            # X.drop(columns=["age", "c_charge_desc_Battery"])
         return X, y, Z
 
     """
@@ -83,6 +95,53 @@ class DataProcessor:
         X_test = X_test.pipe(scale_df, scaler)
 
         return X_train, X_test, y_train, y_test, Z_train, Z_test
+
+    def highlyRelevantFeatures(self, df):
+        cor = df.corr()
+
+        cor_target = abs(cor["score_text_cat"])
+        relevant_features = cor_target[cor_target>0.2]
+        print("Highly relevant features are: {}".format(relevant_features))
+
+    def featureSelector(self, df):
+        cor = df.corr()
+        second_largest = cor.apply(lambda row: row.nlargest(2).values[-1],axis=1)
+        for index, row in cor.iterrows():
+            if second_largest[index] < 0.2:
+                cor.drop(index, inplace=True)
+                cor.drop(index, inplace=True, axis=1)
+        # visualize.plotFeatureCorrelations(cor)
+
+class FeatureSelector:
+    def __init__(self):
+        self.model = RandomForestRegressor(max_depth=5, random_state=0, n_estimators=20)
+
+    def select_k(self, k, X, y):
+        rfe = RFE(self.model, k)
+        X_rfe = rfe.fit_transform(X, y.values.ravel())
+        self.model.fit(X_rfe, y.values.ravel())
+        return rfe.ranking_
+
+    def select_features(self, X_train, y_train, X_test, y_test):
+        list_of_num_features = np.linspace(10, len(X_train.columns), num=10, endpoint=True).astype(int)
+        best_score = 0
+        best_num_features = 0
+        score_list = []
+        for num_features in list_of_num_features:
+            rfe = RFE(self.model, num_features)
+            X_train_rfe = rfe.fit_transform(X_train, y_train.values.ravel())
+            X_test_rfe = rfe.transform(X_test)
+            self.model.fit(X_train_rfe, y_train.values.ravel())
+            score = self.model.score(X_test_rfe, y_test)
+            score_list.append(score)
+            if score > best_score:
+                best_num_features = num_features
+                best_score = score
+
+        visualize.plotScatter(list_of_num_features, score_list, "Number of features in RFE", "Score")
+
+
+
 
 
 
