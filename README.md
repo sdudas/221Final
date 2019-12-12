@@ -9,7 +9,7 @@ Clone this repository.
 
 Then change your directory to the Project directory.
 
-Currently, this package works with the sensitive attribute of the dataset: race.
+Currently, this package works with the sensitive attribute race.
 
 The below example is to check the fairness of the model for race attribute.
 
