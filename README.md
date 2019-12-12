@@ -24,7 +24,7 @@ Steps:
 ## Architecture
 The overview of the architecture of the model is shown in this figure below:
 
-![](images/architecture.png)
+![](architecture.png)
 
 The system of training two Neural Network might look similar to the one used for training [GANS.](https://arxiv.org/abs/1406.2661) 
 However, it is not the case. 
