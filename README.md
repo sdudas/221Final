@@ -7,7 +7,9 @@ Follow these steps for installation.
 ### Manual Installation
 Clone this repository.
 
-Then change your directory to the Project directory.
+Change your directory to the Project directory.
+
+Install the additional libraries specified in requirements.txt file.
 
 Currently, this package works with the sensitive attribute race.
 
@@ -18,6 +20,8 @@ Steps:
 `git clone git@github.com:sdudas/221Final.git`
 
 `cd FairClassifier`
+
+`pip install -r requirements.txt`
 
 `python src/notebooks/main.py race African-American`
 
